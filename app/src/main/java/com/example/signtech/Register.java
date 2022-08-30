@@ -112,7 +112,7 @@ public class Register extends AppCompatActivity {
             etRegisterPhone.requestFocus();
         }
 
-        if (pass.isEmpty() && confirmpass.isEmpty()) {
+        if (pass.isEmpty() || confirmpass.isEmpty()) {
             progressBarRegister.setVisibility(View.INVISIBLE);
             btnRegister.setVisibility(View.VISIBLE);
             etRegisterPass.setError("password is required");

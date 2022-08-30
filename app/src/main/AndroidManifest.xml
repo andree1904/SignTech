@@ -9,13 +9,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SignTech">
-        <activity android:name=".Register"></activity>
+        <activity android:name=".Change_Password"></activity>
+        <activity android:name=".Register" />
         <activity android:name=".Profile" />
         <activity android:name=".OTP_Verification" />
         <activity android:name=".Login" />
         <activity android:name=".Home" />
         <activity android:name=".ForgotPassword" />
-        <activity android:name=".MainActivity" android:exported="true">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

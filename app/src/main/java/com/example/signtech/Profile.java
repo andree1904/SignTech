@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,6 +30,8 @@ public class Profile extends AppCompatActivity {
     TextView tvPhone;
     TextView tvEmail;
     Button btnLogout;
+    Button btnChangePassword;
+    Button btnDeleteAccount;
     AlertDialog.Builder builder;
 
 
@@ -46,9 +49,9 @@ public class Profile extends AppCompatActivity {
         tvEmail = (TextView) findViewById(R.id.tvEmail);
         tvVerified = (TextView) findViewById(R.id.tvVerified);
         btnLogout = (Button) findViewById(R.id.btnLogout);
+        btnChangePassword = (Button) findViewById(R.id.btnChangePassword);
+        btnDeleteAccount = (Button) findViewById(R.id.btnDeleteAccount);
         builder = new AlertDialog.Builder(this);
-
-
 
         EmailVerified();
         mAuth = FirebaseAuth.getInstance();
@@ -56,6 +59,37 @@ public class Profile extends AppCompatActivity {
         reference = FirebaseDatabase.getInstance().getReference("Users");
         userID = user.getUid();
 
+
+        btnChangePassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Profile.this,Change_Password.class);
+                startActivity(intent);
+            }
+        });
+
+        btnDeleteAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                builder.setTitle("Warning!")
+                        .setMessage("Do you want to delete your account?")
+                        .setCancelable(true)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                DeleteAccount();
+                            }
+                        })
+
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        })
+                        .show();
+            }
+        });
         reference.child(userID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -107,6 +141,31 @@ public class Profile extends AppCompatActivity {
                         .show();
             }
         });
+    }
+    private void DeleteAccount() {
+            FirebaseDatabase
+                    .getInstance()
+                    .getReference()
+                    .child("Users")
+                    .child(user.getUid())
+                    .setValue(null)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+
+                                    if (task.isSuccessful()) {
+                                        Intent intent = new Intent(Profile.this, Login.class);
+                                        startActivity(intent);
+
+                                    }
+                                }
+                            });
+                        }
+                    });
+
     }
 
     private void EmailVerified() {
