@@ -107,7 +107,6 @@
         android:layout_height="43dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/custom_input"
-
         android:ems="10"
         android:inputType="number"
         android:text="+63"
