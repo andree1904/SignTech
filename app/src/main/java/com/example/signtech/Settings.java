@@ -132,8 +132,6 @@ public class Settings extends AppCompatActivity {
                             public void onComplete(@NonNull Task<Void> task) {
 
                                 if (task.isSuccessful()) {
-                                    Intent intent = new Intent(Settings.this, Login.class);
-                                    startActivity(intent);
                                     finish();
 
                                 }
