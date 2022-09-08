@@ -1,8 +1,10 @@
 package com.example.signtech;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,13 +12,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthOptions;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.concurrent.TimeUnit;
 
 public class EditProfile extends AppCompatActivity {
 
@@ -24,11 +32,13 @@ public class EditProfile extends AppCompatActivity {
     EditText etEditEmail;
     EditText etEditPhone;
     Button btnUpdate;
+    AlertDialog.Builder builder;
 
     private FirebaseUser user;
     private DatabaseReference reference;
     private String userID;
     private FirebaseAuth mAuth;
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
 
 String name,email,phone;
     @Override
@@ -40,7 +50,7 @@ String name,email,phone;
         etEditEmail = (EditText) findViewById(R.id.etEditEmail);
         etEditPhone = (EditText) findViewById(R.id.etEditPhone);
         btnUpdate = (Button) findViewById(R.id.btnUpdate);
-
+        builder = new AlertDialog.Builder(this);
 
         mAuth = FirebaseAuth.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -52,7 +62,25 @@ String name,email,phone;
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Update();
+                builder.setTitle("Warning!")
+                        .setMessage("Do you want to change your account information?")
+                        .setCancelable(true)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                AccountChange();
+
+                            }
+                        })
+
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        })
+                        .show();
+
 
             }
         });
@@ -86,48 +114,26 @@ String name,email,phone;
 
 
     }
-public void Update() {
-        if (NameChange() || EmailChange() || PhoneChange()) {
-            Toast.makeText(EditProfile.this,"Data is updated",Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(EditProfile.this,"It is the same",Toast.LENGTH_LONG).show();
-        }
 
-}
+    private boolean updateAccount( String name,String email, String phone) {
 
-    private boolean NameChange() {
-        if (!name.equals(etEditName.getText().toString())) {
-            reference.child(userID).child("name").setValue(etEditName.getText().toString());
-            Intent intent = new Intent(EditProfile.this,Settings.class);
-            startActivity(intent);
-            finish();
-            return true;
-        } else {
-            return false;
-        }
-    }
-    private boolean EmailChange() {
-        if (!email.equals((etEditEmail.getText().toString()))) {
-            reference.child(userID).child("email").setValue(etEditEmail.getText().toString());
-            user.updateEmail(etEditEmail.getText().toString());
-            Intent intent = new Intent(EditProfile.this,Settings.class);
-            startActivity(intent);
-            finish();
-            return true;
-        } else {
-            return false;
-        }
+
+        User userUpdate = new User(name,email,phone);
+
+        reference.child(userID).setValue(userUpdate);
+        Toast.makeText(getApplicationContext()," information is now updated",Toast.LENGTH_LONG).show();
+        return true;
     }
 
-    private boolean PhoneChange() {
-        if (!phone.equals((etEditPhone.getText().toString()))) {
-            reference.child(userID).child("phone").setValue(etEditPhone.getText().toString());
-            Intent intent = new Intent(EditProfile.this,Settings.class);
-            startActivity(intent);
-            finish();
-            return true;
-        } else {
-            return false;
-        }
+    private void AccountChange() {
+        String changeName = etEditName.getText().toString().trim();
+        String changeEmail = etEditEmail.getText().toString().trim();
+        String changePhone = etEditPhone.getText().toString().trim();
+
+        updateAccount(changeName, changeEmail, changePhone);
+        user.updateEmail(changeEmail);
+
     }
+
+
 }
