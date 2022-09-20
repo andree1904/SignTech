@@ -25,12 +25,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import java.util.concurrent.TimeUnit;
 
 public class OTP_Verification extends AppCompatActivity {
-    EditText etC1;
-    EditText etC2;
-    EditText etC3;
-    EditText etC4;
-    EditText etC5;
-    EditText etC6;
+    EditText etOTPCode;
     TextView tvMobile;
     TextView tvResendBtn;
     Button btnVerify;
@@ -44,12 +39,7 @@ public class OTP_Verification extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otp_verification);
-        etC1 = (EditText) findViewById(R.id.etC1);
-        etC2 = (EditText) findViewById(R.id.etC2);
-        etC3 = (EditText) findViewById(R.id.etC3);
-        etC4 = (EditText) findViewById(R.id.etC4);
-        etC5 = (EditText) findViewById(R.id.etC5);
-        etC6 = (EditText) findViewById(R.id.etC6);
+        etOTPCode = findViewById(R.id.etOTPCode);
         tvMobile = (TextView) findViewById(R.id.tvMobile);
         tvResendBtn = (TextView) findViewById(R.id.tvResendBtn);
         btnVerify = (Button) findViewById(R.id.btnVerify);
@@ -108,20 +98,16 @@ public class OTP_Verification extends AppCompatActivity {
 
 
     public void verify() {
-        String Code1 = etC1.getText().toString().trim();
-        String Code2 = etC2.getText().toString().trim();
-        String Code3 = etC3.getText().toString().trim();
-        String Code4 = etC4.getText().toString().trim();
-        String Code5 = etC5.getText().toString().trim();
-        String Code6 = etC6.getText().toString().trim();
+        String OTPCode = etOTPCode.getText().toString().trim();
 
-        if (Code1.isEmpty() || Code2.isEmpty() || Code3.isEmpty() || Code4.isEmpty() || Code5.isEmpty() || Code6.isEmpty()) {
+
+        if (OTPCode.isEmpty()) {
             Toast.makeText(OTP_Verification.this,"Otp is not valid",Toast.LENGTH_LONG).show();
 
         }
         else {
             if (verificationId != null) {
-                String VerifyCode = Code1 + Code2 + Code3 + Code4 + Code5 + Code6;
+                String VerifyCode = OTPCode;
 
                 PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId,VerifyCode);
                 mAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -149,7 +135,7 @@ public class OTP_Verification extends AppCompatActivity {
     }
 
     private void editTextInput() {
-        etC1.addTextChangedListener(new TextWatcher() {
+        etOTPCode.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -157,7 +143,7 @@ public class OTP_Verification extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                etC1.requestFocus();
+                etOTPCode.requestFocus();
             }
 
             @Override
@@ -166,91 +152,6 @@ public class OTP_Verification extends AppCompatActivity {
             }
         });
 
-        etC2.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                etC2.requestFocus();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        etC3.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                etC3.requestFocus();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        etC4.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                etC4.requestFocus();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-
-        etC5.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                etC5.requestFocus();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        etC6.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                etC6.requestFocus();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
 
     }
 
