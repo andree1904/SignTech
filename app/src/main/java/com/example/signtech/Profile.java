@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -29,7 +30,7 @@ public class Profile extends AppCompatActivity {
     TextView tvWelcome;
     TextView tvPhone;
     TextView tvEmail;
-    Button btnSetting;
+    TextView tvLogout;
     AlertDialog.Builder builder;
 
 
@@ -46,7 +47,7 @@ public class Profile extends AppCompatActivity {
         tvPhone = (TextView) findViewById(R.id.tvPhone);
         tvEmail = (TextView) findViewById(R.id.tvEmail);
         tvVerified = (TextView) findViewById(R.id.tvVerified);
-        btnSetting = (Button) findViewById(R.id.btnSetting);
+    tvLogout = (TextView) findViewById(R.id.tvLogout);
 
         builder = new AlertDialog.Builder(this);
 
@@ -56,12 +57,28 @@ public class Profile extends AppCompatActivity {
         reference = FirebaseDatabase.getInstance().getReference("Users");
         userID = user.getUid();
 
-        btnSetting.setOnClickListener(new View.OnClickListener() {
+        tvLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Profile.this,Settings.class);
-                startActivity(intent);
-                finish();
+                builder.setTitle("Logout!")
+                        .setMessage("Do you want to Logout?")
+                        .setCancelable(true)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                mAuth.signOut();
+                                Intent intent = new Intent(Profile.this,Authentication_Choice.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        })
+                        .show();
             }
         });
 
@@ -77,7 +94,7 @@ public class Profile extends AppCompatActivity {
 
                     tvWelcome.setText(name);
                     tvEmail.setText(email);
-                    tvPhone.setText("+63"+phone);
+                    tvPhone.setText("+63-"+phone);
                 }
 
 
@@ -103,6 +120,7 @@ public class Profile extends AppCompatActivity {
                 tvVerified.setText("Email verified");
             } else {
                 tvVerified.setText("Email not verified (Click to verify)");
+                tvVerified.setTextColor(Color.RED);
                 tvVerified.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

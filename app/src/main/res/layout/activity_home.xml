@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient"
+    android:background="@color/green"
     tools:context=".Home">
 
     <TextView
@@ -12,6 +12,7 @@
         android:layout_width="69dp"
         android:layout_height="40dp"
         android:text="Home"
+        android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,6 +23,7 @@
         android:layout_width="255dp"
         android:layout_height="50dp"
         android:layout_marginTop="28dp"
+        android:textColor="#FFFFFF"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="@+id/textView5"
         app:layout_constraintStart_toStartOf="@+id/textView5"

@@ -7,16 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="backgroundcolor">#EEEDDE</color>
-    <color name="lightgray">#E0DDAA</color>
-    <color name="colorAccent">#03DAC5</color>
-    <color name="colorGradientStart">#EEEDDE</color>
-    <color name="colorGradientCenter">#E0DDAA</color>
-    <color name="color1">#E0DDAA</color>
-    <color name="color2">#203239</color>
-    <color name="colorGradientEnd">#203239</color>
-    <color name="colorWhite">#FFFFFF</color>
-
-    <color name="black_overlay">#66000000</color>
+    <color name="green">#1b7340</color>
+    <color name="red">#FF0000</color>
+    <color name="dark_gray">#A9A9A9</color>
+    <color name="blue">#2781EB</color>
+    <color name="transparent">#00000000</color>
 
 </resources>
