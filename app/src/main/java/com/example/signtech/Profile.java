@@ -98,7 +98,6 @@ public class Profile extends AppCompatActivity {
                 }
 
 
-
             }
 
             @Override
