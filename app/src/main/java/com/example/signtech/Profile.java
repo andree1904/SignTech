@@ -97,7 +97,6 @@ public class Profile extends AppCompatActivity {
                     tvPhone.setText("+63-"+phone);
                 }
 
-
             }
 
             @Override
