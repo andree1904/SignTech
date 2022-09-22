@@ -117,9 +117,9 @@ public class Profile extends AppCompatActivity {
         if (user != null) {
 
             if (user.isEmailVerified()) {
-                tvVerified.setText("Email verified");
+                tvVerified.setText("Email Verified");
             } else {
-                tvVerified.setText("Email not verified (Click to verify)");
+                tvVerified.setText("Email not Verify (Click to verify)");
                 tvVerified.setTextColor(Color.RED);
                 tvVerified.setOnClickListener(new View.OnClickListener() {
                     @Override
