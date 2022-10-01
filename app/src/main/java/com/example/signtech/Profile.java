@@ -31,6 +31,7 @@ public class Profile extends AppCompatActivity {
     TextView tvPhone;
     TextView tvEmail;
     TextView tvLogout;
+    TextView tvDeleteAccount;
     AlertDialog.Builder builder;
 
 
@@ -48,6 +49,7 @@ public class Profile extends AppCompatActivity {
         tvEmail = (TextView) findViewById(R.id.tvEmail);
         tvVerified = (TextView) findViewById(R.id.tvVerified);
     tvLogout = (TextView) findViewById(R.id.tvLogout);
+    tvDeleteAccount = (TextView) findViewById(R.id.tvDeleteAccount);
 
         builder = new AlertDialog.Builder(this);
 
@@ -56,6 +58,31 @@ public class Profile extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Users");
         userID = user.getUid();
+
+        tvDeleteAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                builder.setTitle("Warning!")
+                        .setMessage("Do you want to delete your account?")
+                        .setCancelable(true)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                DeleteAccount();
+
+                            }
+                        })
+
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        })
+                        .show();
+            }
+
+        });
 
         tvLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,5 +163,28 @@ public class Profile extends AppCompatActivity {
         }
 
     }
+    private void DeleteAccount() {
+        FirebaseDatabase
+                .getInstance()
+                .getReference()
+                .child("Users")
+                .child(user.getUid())
+                .setValue(null)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
 
+                                if (task.isSuccessful()) {
+                                    finish();
+                                    Toast.makeText(Profile.this,"Successfully Deleted User Account",Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    }
+                });
+
+    }
 }

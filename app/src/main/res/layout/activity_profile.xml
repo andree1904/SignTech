@@ -142,7 +142,7 @@
         app:layout_constraintVertical_bias="0.317" />
 
     <TextView
-        android:id="@+id/textView26"
+        android:id="@+id/tvDeleteAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
