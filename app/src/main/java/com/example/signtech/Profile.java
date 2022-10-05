@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,8 @@ public class Profile extends AppCompatActivity {
     TextView tvEmail;
     TextView tvLogout;
     TextView tvDeleteAccount;
+    TextView tvEditProfile;
+    TextView tvChangePass;
     AlertDialog.Builder builder;
 
 
@@ -48,8 +51,10 @@ public class Profile extends AppCompatActivity {
         tvPhone = (TextView) findViewById(R.id.tvPhone);
         tvEmail = (TextView) findViewById(R.id.tvEmail);
         tvVerified = (TextView) findViewById(R.id.tvVerified);
-    tvLogout = (TextView) findViewById(R.id.tvLogout);
-    tvDeleteAccount = (TextView) findViewById(R.id.tvDeleteAccount);
+        tvLogout = (TextView) findViewById(R.id.tvLogout);
+        tvDeleteAccount = (TextView) findViewById(R.id.tvDeleteAccount);
+        tvEditProfile = (TextView) findViewById(R.id.tvEditProfile);
+        tvChangePass = (TextView) findViewById(R.id.tvChangePass);
 
         builder = new AlertDialog.Builder(this);
 
@@ -58,6 +63,25 @@ public class Profile extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Users");
         userID = user.getUid();
+
+        tvEditProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Profile.this,EditProfile.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        tvChangePass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Profile.this,Change_Password.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
 
         tvDeleteAccount.setOnClickListener(new View.OnClickListener() {
             @Override

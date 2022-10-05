@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseException;
@@ -32,6 +33,7 @@ public class EditProfile extends AppCompatActivity {
     EditText etEditEmail;
     EditText etEditPhone;
     Button btnUpdate;
+    ProgressBar progressBarEditProfile;
     AlertDialog.Builder builder;
 
     private FirebaseUser user;
@@ -50,6 +52,7 @@ String name,email,phone;
         etEditEmail = (EditText) findViewById(R.id.etEditEmail);
         etEditPhone = (EditText) findViewById(R.id.etEditPhone);
         btnUpdate = (Button) findViewById(R.id.btnUpdate);
+        progressBarEditProfile = (ProgressBar) findViewById(R.id.progressBarEditProfile);
         builder = new AlertDialog.Builder(this);
 
         mAuth = FirebaseAuth.getInstance();
@@ -68,6 +71,9 @@ String name,email,phone;
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(EditProfile.this,Profile.class);
+                                startActivity(intent);
+                                finish();
                                 AccountChange();
 
                             }

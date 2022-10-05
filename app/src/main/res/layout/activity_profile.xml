@@ -106,12 +106,12 @@
         app:layout_constraintVertical_bias="0.025" />
 
     <TextView
-        android:id="@+id/textView24"
+        android:id="@+id/tvEditProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
-        android:drawableRight="@drawable/nextbutton"
         android:drawableLeft="@drawable/editbutton"
+        android:drawableRight="@drawable/nextbutton"
         android:drawablePadding="50sp"
         android:drawableTint="#FFBF00"
         android:fontFamily="@font/sfbold"
@@ -124,7 +124,7 @@
         app:layout_constraintVertical_bias="0.101" />
 
     <TextView
-        android:id="@+id/textView25"
+        android:id="@+id/tvChangePass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
