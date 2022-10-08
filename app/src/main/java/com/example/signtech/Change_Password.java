@@ -51,8 +51,6 @@ public class Change_Password extends AppCompatActivity {
                 ChangePassword();
             }
         });
-
-
     }
 
     public void ChangePassword() {
