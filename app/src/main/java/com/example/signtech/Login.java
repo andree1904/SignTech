@@ -18,6 +18,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.regex.Pattern;
+
 public class Login extends AppCompatActivity {
     EditText etLoginEmail;
     EditText etLoginPass;
@@ -26,7 +28,11 @@ public class Login extends AppCompatActivity {
     TextView tvForgotPassword;
     ProgressBar progressBarLogin;
     private FirebaseAuth mAuth;
-
+    private static final Pattern PASSWORD_PATTERN =
+            Pattern.compile("^" +
+                    "(?=.*[0-9])" + "(?=.*[a-z])" + "(?=.*[A-Z])" + "(?=.*[@#$%^&+=])"
+                    + "(?=\\S+$)" + ".{8,}" + "$"
+            );
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,8 +114,8 @@ public class Login extends AppCompatActivity {
             });
         }
 
-        if (pass.length() < 8) {
-            etLoginPass.setError("Min password length is 8 characters");
+        if (!PASSWORD_PATTERN.matcher(pass).matches()) {
+            etLoginPass.setError("Password too weak, please enter atleast 8 characters, Upper and lowe cases, 1 special character with no spaces");
             etLoginPass.requestFocus();
         }
 

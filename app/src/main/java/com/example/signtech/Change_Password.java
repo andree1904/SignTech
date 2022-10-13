@@ -20,6 +20,8 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.regex.Pattern;
+
 public class Change_Password extends AppCompatActivity {
 
     EditText etCurrentPass;
@@ -29,7 +31,11 @@ public class Change_Password extends AppCompatActivity {
     ProgressBar progressBarChangePass;
     FirebaseAuth mAuth;
     AlertDialog.Builder builder;
-
+    private static final Pattern PASSWORD_PATTERN =
+            Pattern.compile("^" +
+                    "(?=.*[0-9])" + "(?=.*[a-z])" + "(?=.*[A-Z])" + "(?=.*[@#$%^&+=])"
+                    + "(?=\\S+$)" + ".{8,}" + "$"
+            );
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,15 +72,15 @@ public class Change_Password extends AppCompatActivity {
             etCurrentPass.setError("this is required");
         }
 
-        if (newpass.length() < 8 ) {
+        if (!PASSWORD_PATTERN.matcher(newpass).matches() ) {
             progressBarChangePass.setVisibility(View.INVISIBLE);
             btnChangePass.setVisibility(View.VISIBLE);
-            etNewPass.setError("Password length must be 8 characters");
+            etNewPass.setError("Password too weak, please enter atleast 8 characters, Upper and lowe cases, 1 special character with no spaces");
         }
-        if (confirmNewPass.length() < 8) {
+        if (!PASSWORD_PATTERN.matcher(confirmNewPass).matches()) {
             progressBarChangePass.setVisibility(View.INVISIBLE);
             btnChangePass.setVisibility(View.VISIBLE);
-            etConfirmNewPass.setError("Password length must be 8 characters");
+            etConfirmNewPass.setError("Password too weak, please enter atleast 8 characters, Upper and lowe cases, 1 special character with no spaces");
         }
 
         if (newpass.equals(confirmNewPass)) {

@@ -24,6 +24,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public class Register extends AppCompatActivity {
 
@@ -35,7 +36,11 @@ public class Register extends AppCompatActivity {
     Button btnRegister;
     TextView tvLoginHere;
     ProgressBar progressBarRegister;
-
+    private static final Pattern PASSWORD_PATTERN =
+            Pattern.compile("^" +
+                    "(?=.*[0-9])" + "(?=.*[a-z])" + "(?=.*[A-Z])" + "(?=.*[@#$%^&+=])"
+                    + "(?=\\S+$)" + ".{8,}" + "$"
+                    );
     private FirebaseAuth mAuth;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
 
@@ -119,10 +124,10 @@ public class Register extends AppCompatActivity {
             etRegisterPass.requestFocus();
 
         }
-        if (pass.length() < 8) {
+        if (!PASSWORD_PATTERN.matcher(pass).matches()) {
             progressBarRegister.setVisibility(View.INVISIBLE);
             btnRegister.setVisibility(View.VISIBLE);
-            etRegisterPass.setError("Min password length should be 8 characters");
+            etRegisterPass.setError("Password too weak, please enter atleast 8 characters, Upper and lowe cases, 1 special character with no spaces");
             etRegisterPass.requestFocus();
         }
 

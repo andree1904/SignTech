@@ -3,6 +3,8 @@ package com.example.signtech;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +13,8 @@ public class Authentication_Choice extends AppCompatActivity {
 
     Button btnGotoLogin;
     Button btnGotoRegister;
+
+    NetworkChangeListener networkChangeListener = new NetworkChangeListener();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,4 +46,16 @@ public class Authentication_Choice extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeListener,filter);
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkChangeListener);
+        super.onStop();
+    }
 }

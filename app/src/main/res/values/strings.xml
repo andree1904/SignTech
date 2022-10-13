@@ -16,4 +16,9 @@
     <string name="resend1">
         Resend OTP
     </string>
+
+    <string name="deletAccount">
+        You can delete all of your profile information and you can also delete all of your data information
+        in this application. Remember that we cannot retrieve your data once you deleted your account.
+    </string>
 </resources>
