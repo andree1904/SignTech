@@ -12,5 +12,17 @@
     <color name="dark_gray">#A9A9A9</color>
     <color name="blue">#2781EB</color>
     <color name="transparent">#00000000</color>
-
+    <color name="brown">#A63E29</color>
+    <color name="dark_red">#A02C1C</color>
+    <color name="black_blur">#1A000000</color>
+    <color name="input">#F0F2F5</color>
+    <color name="gray">#D9D9D9</color>
+    <color name="red_dark">#B7342F</color>
+    <color name="red_light">#D88484</color>
+    <color name="green_light">#80DC54</color>
+    <color name="green_bg">#84C49C</color>
+    <color name="light_blue">#40B4Fc</color>
+    <color name="light_black">#585858</color>
+    <color name="sign_color">#1C2424</color>
+    <color name="yellow">#ebb912</color>
 </resources>

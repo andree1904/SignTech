@@ -6,11 +6,9 @@
     android:layout_height="match_parent"
     >
 
-
     <LinearLayout
-        android:layout_width="338dp"
-        android:layout_height="459dp"
-        android:gravity="center"
+        android:layout_width="379dp"
+        android:layout_height="373dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -18,68 +16,46 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/imageView8"
-            android:layout_width="141dp"
-            android:layout_height="163dp"
-            android:layout_marginTop="60dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_signal_wifi_off_24" />
-
-        <TextView
-            android:id="@+id/textView13"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
-            android:fontFamily="@font/feather"
-            android:text="OOPS!"
-            android:textColor="@color/green"
-            android:textSize="40sp"
-            app:layout_constraintEnd_toEndOf="@+id/imageView8"
-            app:layout_constraintHorizontal_bias="0.495"
-            app:layout_constraintStart_toStartOf="@+id/imageView8"
-            app:layout_constraintTop_toBottomOf="@+id/imageView8" />
+            android:src="@drawable/no_internet_logo" />
 
         <TextView
-            android:id="@+id/textView15"
-            android:layout_width="390dp"
-            android:layout_height="39dp"
-            android:layout_marginTop="12dp"
-            android:fontFamily="@font/sanfrancisco"
-            android:gravity="center"
-            android:text="You have no Internet connection"
-            android:textColor="@color/green"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="@+id/textView13"
-            app:layout_constraintHorizontal_bias="0.504"
-            app:layout_constraintStart_toStartOf="@+id/textView13"
-            app:layout_constraintTop_toBottomOf="@+id/textView13" />
-
-        <TextView
-            android:id="@+id/textView17"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/sanfrancisco"
-            android:gravity="center"
-            android:text="Please check your Internet connection"
-            android:textColor="@color/green"
-            android:textSize="17dp"
-            app:layout_constraintEnd_toEndOf="@+id/textView15"
-            app:layout_constraintStart_toStartOf="@+id/textView15"
-            app:layout_constraintTop_toBottomOf="@+id/textView15" />
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/helvetica"
+            android:text="Oops!"
+            android:textColor="@color/black"
+            android:textSize="35dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="50dp"
+            android:fontFamily="@font/helvetica_regular"
+            android:text="You are not connected to the internet. Please check your internet connection."
+            android:textColor="@color/black"
+            android:textSize="14dp" />
 
         <Button
             android:id="@+id/btnRetryConnection"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:fontFamily="@font/feather"
-            android:text="Retry"
-            app:backgroundTint="@color/green"
-            app:layout_constraintEnd_toEndOf="@+id/textView17"
-            app:layout_constraintStart_toStartOf="@+id/textView17"
-            app:layout_constraintTop_toBottomOf="@+id/textView17" />
+            android:layout_width="320dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/custom_button"
+            android:fontFamily="@font/helvetica"
+            android:text="Try Again"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="25dp" />
+
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,7 +29,8 @@ public class Change_Password extends AppCompatActivity {
     EditText etNewPass;
     EditText etConfirmNewPass;
     Button btnChangePass;
-    ProgressBar progressBarChangePass;
+
+    private ProgressDialog progressDialog;
     FirebaseAuth mAuth;
     AlertDialog.Builder builder;
     private static final Pattern PASSWORD_PATTERN =
@@ -45,7 +47,7 @@ public class Change_Password extends AppCompatActivity {
         etNewPass = (EditText) findViewById(R.id.etNewPass);
         etConfirmNewPass = (EditText) findViewById(R.id.etConfirmNewPass);
         btnChangePass = (Button) findViewById(R.id.btnChangePass);
-        progressBarChangePass = (ProgressBar) findViewById(R.id.progressBarChangePass);
+        progressDialog = new ProgressDialog(Change_Password.this);
 
         builder = new AlertDialog.Builder(this);
         mAuth = FirebaseAuth.getInstance();
@@ -67,20 +69,13 @@ public class Change_Password extends AppCompatActivity {
         String confirmNewPass = etConfirmNewPass.getText().toString().trim();
 
         if (currentpass.isEmpty() && newpass.isEmpty() && confirmNewPass.isEmpty()) {
-            progressBarChangePass.setVisibility(View.INVISIBLE);
-            btnChangePass.setVisibility(View.VISIBLE);
+            progressDialog.hide();
             etCurrentPass.setError("this is required");
         }
 
-        if (!PASSWORD_PATTERN.matcher(newpass).matches() ) {
-            progressBarChangePass.setVisibility(View.INVISIBLE);
-            btnChangePass.setVisibility(View.VISIBLE);
+        if (newpass.length() < 8 ) {
+          progressDialog.hide();
             etNewPass.setError("Password too weak, please enter atleast 8 characters, Upper and lowe cases, 1 special character with no spaces");
-        }
-        if (!PASSWORD_PATTERN.matcher(confirmNewPass).matches()) {
-            progressBarChangePass.setVisibility(View.INVISIBLE);
-            btnChangePass.setVisibility(View.VISIBLE);
-            etConfirmNewPass.setError("Password too weak, please enter atleast 8 characters, Upper and lowe cases, 1 special character with no spaces");
         }
 
         if (newpass.equals(confirmNewPass)) {
@@ -90,8 +85,8 @@ public class Change_Password extends AppCompatActivity {
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            progressBarChangePass.setVisibility(View.VISIBLE);
-                            btnChangePass.setVisibility(View.INVISIBLE);
+                            progressDialog.setMessage("loading");
+                            progressDialog.show();
                             AuthCredential authCredential = EmailAuthProvider.getCredential(user.getEmail(),currentpass);
                             user.reauthenticate(authCredential)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -111,8 +106,7 @@ public class Change_Password extends AppCompatActivity {
                                                     .addOnFailureListener(new OnFailureListener() {
                                                         @Override
                                                         public void onFailure(@NonNull Exception e) {
-                                                            progressBarChangePass.setVisibility(View.INVISIBLE);
-                                                            btnChangePass.setVisibility(View.VISIBLE);
+                                                            progressDialog.hide();
                                                             Toast.makeText(Change_Password.this,""+ e.getMessage(),Toast.LENGTH_LONG).show();
                                                         }
                                                     });
@@ -121,8 +115,7 @@ public class Change_Password extends AppCompatActivity {
                                     .addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-                                            progressBarChangePass.setVisibility(View.INVISIBLE);
-                                            btnChangePass.setVisibility(View.VISIBLE);
+                                            progressDialog.hide();
                                             Toast.makeText(Change_Password.this,""+ e.getMessage(),Toast.LENGTH_LONG).show();
 
                                         }
@@ -139,8 +132,7 @@ public class Change_Password extends AppCompatActivity {
 
         }
         else {
-            progressBarChangePass.setVisibility(View.INVISIBLE);
-            btnChangePass.setVisibility(View.VISIBLE);
+           progressDialog.hide();
             Toast.makeText(Change_Password.this,"Password Unmatch",Toast.LENGTH_SHORT).show();
         }
     }

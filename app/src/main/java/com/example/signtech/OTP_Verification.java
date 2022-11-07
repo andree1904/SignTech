@@ -3,8 +3,10 @@ package com.example.signtech;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -19,36 +21,48 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.concurrent.TimeUnit;
 
 public class OTP_Verification extends AppCompatActivity {
     EditText etOTPCode;
-    TextView tvMobile;
     TextView tvResendBtn;
+    TextView tvTimer;
     Button btnVerify;
-    ProgressBar progressBarVerify;
+
 
     private String verificationId;
     private FirebaseAuth mAuth;
+    private FirebaseUser user;
+    private DatabaseReference reference;
+    private String userID;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otp_verification);
         etOTPCode = findViewById(R.id.etOTPCode);
-        tvMobile = (TextView) findViewById(R.id.tvMobile);
+
         tvResendBtn = (TextView) findViewById(R.id.tvResendBtn);
         btnVerify = (Button) findViewById(R.id.btnVerify);
-        progressBarVerify = (ProgressBar) findViewById(R.id.progressBarVerify);
+        tvTimer = (TextView) findViewById(R.id.tvTimer);
+
+
 
         verificationId = getIntent().getStringExtra("verificationId");
         mAuth = FirebaseAuth.getInstance();
-        User user = new User();
-        tvMobile.setText(String.format("+63-%s", getIntent().getStringExtra("phone")));
+        progressDialog = new ProgressDialog(OTP_Verification.this);
+        mAuth = FirebaseAuth.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        reference = FirebaseDatabase.getInstance().getReference("Users");
+        userID = user.getUid();
 
         editTextInput();
         tvResendBtn.setOnClickListener(new View.OnClickListener() {
@@ -56,9 +70,10 @@ public class OTP_Verification extends AppCompatActivity {
             public void onClick(View view) {
                 PhoneAuthProvider.getInstance().verifyPhoneNumber(
                         "+63" + getIntent().getStringExtra("phone"),
-                        60l,
+                        0,
                         TimeUnit.SECONDS,
                         OTP_Verification.this,
+
                         new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                             @Override
                             public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
@@ -73,21 +88,22 @@ public class OTP_Verification extends AppCompatActivity {
                             public void onCodeSent(@NonNull String newverificationId,
                                                    @NonNull PhoneAuthProvider.ForceResendingToken token) {
                                 verificationId = newverificationId;
+
                                 Toast.makeText(OTP_Verification.this,"OTP send", Toast.LENGTH_LONG).show();
 
                             }
                         }
                 );
+                startTimer(60 * 1000,1000);
+                tvResendBtn.setEnabled(false);
 
             }
         });
 
+
         btnVerify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                progressBarVerify.setVisibility(View.VISIBLE);
-                btnVerify.setVisibility(View.INVISIBLE);
                 verify();
             }
         });
@@ -99,9 +115,10 @@ public class OTP_Verification extends AppCompatActivity {
 
     public void verify() {
         String OTPCode = etOTPCode.getText().toString().trim();
-
-
+        progressDialog.setMessage("loading");
+        progressDialog.show();
         if (OTPCode.isEmpty()) {
+            progressDialog.hide();
             Toast.makeText(OTP_Verification.this,"Otp is not valid",Toast.LENGTH_LONG).show();
 
         }
@@ -110,12 +127,11 @@ public class OTP_Verification extends AppCompatActivity {
                 String VerifyCode = OTPCode;
 
                 PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId,VerifyCode);
-                mAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                user.updatePhoneNumber(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+                    public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            progressBarVerify.setVisibility(View.VISIBLE);
-                            btnVerify.setVisibility(View.INVISIBLE);
+
                             Toast.makeText(OTP_Verification.this,"phone number verified",Toast.LENGTH_LONG).show();
                             Intent intent = new Intent(OTP_Verification.this,RegisterDone.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -123,13 +139,13 @@ public class OTP_Verification extends AppCompatActivity {
                             finish();
                         }
                         else {
-                            progressBarVerify.setVisibility(View.INVISIBLE);
-                            btnVerify.setVisibility(View.VISIBLE);
+                            progressDialog.hide();
                             Toast.makeText(OTP_Verification.this,"Invalid OTP", Toast.LENGTH_LONG).show();
                         }
 
                     }
                 });
+
             }
         }
     }
@@ -154,5 +170,24 @@ public class OTP_Verification extends AppCompatActivity {
 
 
     }
+        private void startTimer(final long finish, long tick){
 
+        tvTimer.setVisibility(View.VISIBLE);
+            CountDownTimer countDownTimer;
+
+            countDownTimer = new CountDownTimer(finish,tick) {
+                @Override
+                public void onTick(long l) {
+                    long remindSec = l / 1000;
+                    tvTimer.setText("Resend OTP in: " + (remindSec / 60) + ":" + (remindSec % 60));
+
+                }
+
+                @Override
+                public void onFinish() {
+                    tvResendBtn.setEnabled(true);
+                    tvTimer.setVisibility(View.INVISIBLE);
+                }
+            }.start();
+        }
 }

@@ -3,6 +3,7 @@ package com.example.signtech;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -33,17 +34,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import static com.example.signtech.R.drawable.custom_button10;
+import static com.example.signtech.R.drawable.custom_button9;
+
 public class Profile extends AppCompatActivity {
 
     TextView tvVerified;
     TextView tvWelcome;
     TextView tvPhone;
     TextView tvEmail;
-    TextView tvLogout;
-    TextView tvDeleteAccount;
     TextView tvEditProfile;
     TextView tvChangePass;
+    Button btnDelete;
     Button btnDeleteAccount;
+    TextView btnLogout;
+    Button btnCancel;
     EditText etDeleteAccountPass;
 
     AlertDialog.Builder builder;
@@ -63,8 +68,8 @@ public class Profile extends AppCompatActivity {
         tvPhone = (TextView) findViewById(R.id.tvPhone);
         tvEmail = (TextView) findViewById(R.id.tvEmail);
         tvVerified = (TextView) findViewById(R.id.tvVerified);
-        tvLogout = (TextView) findViewById(R.id.tvLogout);
-        tvDeleteAccount = (TextView) findViewById(R.id.tvDeleteAccount);
+        btnLogout = (TextView) findViewById(R.id.btnLogout);
+        btnDelete = (Button) findViewById(R.id.btnDelete);
         tvEditProfile = (TextView) findViewById(R.id.tvEditProfile);
         tvChangePass = (TextView) findViewById(R.id.tvChangePass);
 
@@ -96,7 +101,7 @@ public class Profile extends AppCompatActivity {
         });
 
 
-        tvDeleteAccount.setOnClickListener(new View.OnClickListener() {
+        btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
             DeleteAccountDialog();
@@ -104,7 +109,7 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        tvLogout.setOnClickListener(new View.OnClickListener() {
+        btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 builder.setTitle("Logout!")
@@ -163,16 +168,22 @@ public class Profile extends AppCompatActivity {
 
             if (user.isEmailVerified()) {
                 tvVerified.setText("Email Verified");
+                tvVerified.setBackground(ContextCompat.getDrawable(this, custom_button10));
+                tvVerified.setTextColor(Color.BLACK);
             } else {
-                tvVerified.setText("Email not Verify (Click to verify)");
-                tvVerified.setTextColor(Color.RED);
+                tvVerified.setText("Email not Verified (Click to verify)");
+                tvVerified.setBackground(ContextCompat.getDrawable(this, custom_button9));
+                tvVerified.setTextColor(Color.WHITE);
                 tvVerified.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        progressDialog.setMessage("loading");
+                        progressDialog.show();
                         user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
+                                    progressDialog.hide();
                                     Toast.makeText(Profile.this, "Email verification sent", Toast.LENGTH_LONG).show();
                                 }
                             }
@@ -217,6 +228,7 @@ public class Profile extends AppCompatActivity {
 
          etDeleteAccountPass = dialog.findViewById(R.id.etDeleteAccountPass);
          btnDeleteAccount = dialog.findViewById(R.id.btnDeleteAccount);
+         btnCancel = dialog.findViewById(R.id.btnCancel);
         etDeleteAccountPass.addTextChangedListener(deleteTextWatcher);
 
         btnDeleteAccount.setOnClickListener(new View.OnClickListener() {
@@ -225,8 +237,15 @@ public class Profile extends AppCompatActivity {
                 Delete();
             }
         });
-        dialog.show();
 
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+        dialog.setCancelable(false);
         }
         private TextWatcher deleteTextWatcher = new TextWatcher() {
         @Override
@@ -259,12 +278,14 @@ public class Profile extends AppCompatActivity {
                             public void onSuccess(Void unused) {
                                 progressDialog.setMessage("loading");
                                 progressDialog.show();
+
                                 DeleteAccount();
                             }
                         })
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
+                                        progressDialog.hide();
                                         Toast.makeText(Profile.this,""+ e.getMessage(),Toast.LENGTH_LONG).show();
                                     }
                                 });

@@ -3,12 +3,14 @@ package com.example.signtech;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,7 +28,9 @@ public class Login extends AppCompatActivity {
     Button btnLogin;
     TextView tvRegisterHere;
     TextView tvForgotPassword;
-    ProgressBar progressBarLogin;
+    ImageView imgBackLogin;
+
+    private ProgressDialog progressDialog;
     private FirebaseAuth mAuth;
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^" +
@@ -42,7 +46,8 @@ public class Login extends AppCompatActivity {
         btnLogin = (Button) findViewById(R.id.btnLogin);
         tvRegisterHere = (TextView) findViewById(R.id.tvRegisterHere);
         tvForgotPassword = (TextView) findViewById(R.id.tvForgotPassword);
-        progressBarLogin = (ProgressBar) findViewById(R.id.progressBarLogin);
+        imgBackLogin = (ImageView) findViewById(R.id.imgBackLogin);
+        progressDialog = new ProgressDialog(Login.this);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -56,7 +61,7 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(Login.this,Register.class));
-                finish();
+
             }
         });
         tvForgotPassword.setOnClickListener(new View.OnClickListener() {
@@ -68,31 +73,34 @@ public class Login extends AppCompatActivity {
             }
         });
 
+        imgBackLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Login.super.onBackPressed();
+            }
+        });
     }
 
     private void UserLogin() {
-        progressBarLogin.setVisibility(View.VISIBLE);
-        btnLogin.setVisibility(View.INVISIBLE);
+        progressDialog.setMessage("loading");
+        progressDialog.show();
         String email = etLoginEmail.getText().toString().trim();
         String pass = etLoginPass.getText().toString().trim();
 
         if (email.isEmpty()) {
-            progressBarLogin.setVisibility(View.INVISIBLE);
-            btnLogin.setVisibility(View.VISIBLE);
+          progressDialog.hide();
             etLoginEmail.setError("Email is required");
             etLoginEmail.requestFocus();
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            progressBarLogin.setVisibility(View.INVISIBLE);
-            btnLogin.setVisibility(View.VISIBLE);
+            progressDialog.hide();
             etLoginEmail.setError("Provide a valid email");
             etLoginEmail.requestFocus();
         }
 
         if (pass.isEmpty()) {
-            progressBarLogin.setVisibility(View.INVISIBLE);
-            btnLogin.setVisibility(View.VISIBLE);
+            progressDialog.hide();
             etLoginPass.setError("password is required");
             etLoginPass.requestFocus();
         } else {
@@ -106,15 +114,15 @@ public class Login extends AppCompatActivity {
 
                         Toast.makeText(Login.this, "Login successfully", Toast.LENGTH_LONG).show();
                     } else {
-                        progressBarLogin.setVisibility(View.INVISIBLE);
-                        btnLogin.setVisibility(View.VISIBLE);
+                        progressDialog.hide();
                         Toast.makeText(Login.this, "Unable to login ", Toast.LENGTH_LONG).show();
                     }
                 }
             });
         }
 
-        if (!PASSWORD_PATTERN.matcher(pass).matches()) {
+        if (pass.length() < 8 ) {
+            progressDialog.hide();
             etLoginPass.setError("Password too weak, please enter atleast 8 characters, Upper and lowe cases, 1 special character with no spaces");
             etLoginPass.requestFocus();
         }

@@ -30,7 +30,7 @@ public class Authentication_Choice extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(Authentication_Choice.this,Login.class);
                 startActivity(intent);
-                finish();
+
 
             }
         });
@@ -40,7 +40,7 @@ public class Authentication_Choice extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(Authentication_Choice.this,Register.class);
                 startActivity(intent);
-                finish();
+
             }
         });
 

@@ -3,6 +3,7 @@ package com.example.signtech;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
@@ -19,7 +20,8 @@ import com.google.firebase.auth.FirebaseAuth;
 public class ForgotPassword extends AppCompatActivity {
     private EditText etEmailAddress;
     private Button btnResetPass;
-    private ProgressBar progressBarReset;
+    private ProgressDialog progressDialog;
+
 
     FirebaseAuth mAuth;
     @Override
@@ -29,7 +31,7 @@ public class ForgotPassword extends AppCompatActivity {
 
         etEmailAddress = (EditText) findViewById(R.id.etEmailAddress);
         btnResetPass = (Button) findViewById(R.id.btnResetPass);
-        progressBarReset = (ProgressBar) findViewById(R.id.progressBarReset);
+        progressDialog = new ProgressDialog(ForgotPassword.this);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -45,21 +47,24 @@ public class ForgotPassword extends AppCompatActivity {
     }
 
     private void resetPass() {
+        progressDialog.setMessage("loading");
+        progressDialog.show();
         String email = etEmailAddress.getText().toString().trim();
 
 
         if (email.isEmpty()){
+            progressDialog.hide();
             etEmailAddress.setError("Email is required");
             etEmailAddress.requestFocus();
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            progressDialog.hide();
             etEmailAddress.setError("Enter Valid Email");
             etEmailAddress.requestFocus();
         }
 
-        progressBarReset.setVisibility(View.VISIBLE);
-        btnResetPass.setVisibility(View.INVISIBLE);
+
         mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -70,6 +75,7 @@ public class ForgotPassword extends AppCompatActivity {
                     finish();
 
                 } else {
+                    progressDialog.hide();
                     Toast.makeText(ForgotPassword.this,"There is something wrong",Toast.LENGTH_LONG).show();
                 }
             }

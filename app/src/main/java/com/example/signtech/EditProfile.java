@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,13 +34,13 @@ public class EditProfile extends AppCompatActivity {
     EditText etEditEmail;
     EditText etEditPhone;
     Button btnUpdate;
-    ProgressBar progressBarEditProfile;
     AlertDialog.Builder builder;
 
     private FirebaseUser user;
     private DatabaseReference reference;
     private String userID;
     private FirebaseAuth mAuth;
+    private ProgressDialog progressDialog;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
 
 String name,email,phone;
@@ -52,55 +53,22 @@ String name,email,phone;
         etEditEmail = (EditText) findViewById(R.id.etEditEmail);
         etEditPhone = (EditText) findViewById(R.id.etEditPhone);
         btnUpdate = (Button) findViewById(R.id.btnUpdate);
-        progressBarEditProfile = (ProgressBar) findViewById(R.id.progressBarEditProfile);
         builder = new AlertDialog.Builder(this);
 
         mAuth = FirebaseAuth.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Users");
         userID = user.getUid();
+        progressDialog = new ProgressDialog(EditProfile.this);
 
-        showData();
-
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                builder.setTitle("Warning!")
-                        .setMessage("Do you want to change your account information?")
-                        .setCancelable(true)
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(EditProfile.this,Profile.class);
-                                startActivity(intent);
-                                finish();
-                                AccountChange();
-
-                            }
-                        })
-
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.cancel();
-                            }
-                        })
-                        .show();
-
-
-            }
-        });
-    }
-
-    private void showData() {
         reference.child(userID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User userEdit = snapshot.getValue(User.class);
                 if (userEdit != null) {
-                     name = userEdit.name;
-                     email = userEdit.email;
-                     phone = userEdit.phone;
+                    name = userEdit.name;
+                    email = userEdit.email;
+                    phone = userEdit.phone;
 
                     etEditName.setText(name);
                     etEditEmail.setText(email);
@@ -119,6 +87,31 @@ String name,email,phone;
 
 
 
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                builder.setTitle("Warning!")
+                        .setMessage("Do you want to change your account information?")
+                        .setCancelable(true)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                AccountChange();
+
+                            }
+                        })
+
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        })
+                        .show();
+
+
+            }
+        });
     }
 
     private boolean updateAccount( String name,String email, String phone) {
@@ -132,12 +125,58 @@ String name,email,phone;
     }
 
     private void AccountChange() {
+        progressDialog.setMessage("loading");
+        progressDialog.show();
         String changeName = etEditName.getText().toString().trim();
         String changeEmail = etEditEmail.getText().toString().trim();
         String changePhone = etEditPhone.getText().toString().trim();
 
         updateAccount(changeName, changeEmail, changePhone);
         user.updateEmail(changeEmail);
+
+        if (!changePhone.equals(phone)) {
+            mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                @Override
+                public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
+
+                }
+
+                @Override
+                public void onVerificationFailed(@NonNull FirebaseException e) {
+                    progressDialog.hide();
+                    Toast.makeText(EditProfile.this,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onCodeSent(@NonNull String verificationId,
+                                       @NonNull PhoneAuthProvider.ForceResendingToken token) {
+
+                    Toast.makeText(EditProfile.this,"OTP is successfully send", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(EditProfile.this, Update_OTP_Verification.class);
+                    intent.putExtra("phone", phone);
+                    intent.putExtra("verificationId",verificationId);
+                    startActivity(intent);
+                    finish();
+                }
+            };
+            PhoneAuthOptions options =
+                    PhoneAuthOptions.newBuilder(mAuth)
+                            .setPhoneNumber("+63" + changePhone)
+                            .setTimeout(0l, TimeUnit.SECONDS)
+                            .setActivity(this)
+                            .setCallbacks(mCallbacks)
+                            .build();
+            PhoneAuthProvider.verifyPhoneNumber(options);
+        }
+
+        else {
+            Toast.makeText(EditProfile.this,"Phone number already verified",Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(EditProfile.this,Profile.class);
+            startActivity(intent);
+            progressDialog.hide();
+            finish();
+        }
+
 
     }
 

@@ -3,12 +3,15 @@ package com.example.signtech;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,7 +38,9 @@ public class Register extends AppCompatActivity {
     EditText etRegisterConfirmPass;
     Button btnRegister;
     TextView tvLoginHere;
-    ProgressBar progressBarRegister;
+    ImageView imgBackRegister;
+
+    private ProgressDialog progressDialog;
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^" +
                     "(?=.*[0-9])" + "(?=.*[a-z])" + "(?=.*[A-Z])" + "(?=.*[@#$%^&+=])"
@@ -55,7 +60,8 @@ public class Register extends AppCompatActivity {
         etRegisterConfirmPass = (EditText) findViewById(R.id.etRegisterConfirmPass);
         btnRegister = (Button) findViewById(R.id.btnRegister);
         tvLoginHere = (TextView) findViewById(R.id.tvLoginHere);
-        progressBarRegister = (ProgressBar) findViewById(R.id.progressBarRegister);
+        imgBackRegister = (ImageView) findViewById(R.id.imgBackRegister);
+        progressDialog = new ProgressDialog(Register.this);
 
 
         mAuth = FirebaseAuth.getInstance();
@@ -76,11 +82,17 @@ public class Register extends AppCompatActivity {
             }
         });
 
+        imgBackRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Register.super.onBackPressed();
+            }
+        });
     }
 
     private void registerUser() {
-        progressBarRegister.setVisibility(View.VISIBLE);
-        btnRegister.setVisibility(View.INVISIBLE);
+        progressDialog.setMessage("loading");
+        progressDialog.show();
         String name = etRegisterName.getText().toString().trim();
         String email = etRegisterEmail.getText().toString().trim();
         String phone = etRegisterPhone.getText().toString().trim();
@@ -88,7 +100,7 @@ public class Register extends AppCompatActivity {
         String confirmpass = etRegisterConfirmPass.getText().toString().trim();
 
         if(name.isEmpty()) {
-            progressBarRegister.setVisibility(View.INVISIBLE);
+           progressDialog.hide();
             btnRegister.setVisibility(View.VISIBLE);
             etRegisterName.setError("name is required");
             etRegisterName.requestFocus();
@@ -96,7 +108,7 @@ public class Register extends AppCompatActivity {
 
         }
         if(email.isEmpty()) {
-            progressBarRegister.setVisibility(View.INVISIBLE);
+           progressDialog.hide();
             btnRegister.setVisibility(View.VISIBLE);
             etRegisterEmail.setError("email is required");
             etRegisterEmail.requestFocus();
@@ -104,28 +116,28 @@ public class Register extends AppCompatActivity {
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            progressBarRegister.setVisibility(View.INVISIBLE);
+          progressDialog.hide();
             btnRegister.setVisibility(View.VISIBLE);
             etRegisterEmail.setError("Please provide a valid email");
             etRegisterEmail.requestFocus();
 
         }
         if (phone.isEmpty()) {
-            progressBarRegister.setVisibility(View.INVISIBLE);
+            progressDialog.hide();
             btnRegister.setVisibility(View.VISIBLE);
             etRegisterPhone.setError("phone Number is required");
             etRegisterPhone.requestFocus();
         }
 
         if (pass.isEmpty() || confirmpass.isEmpty()) {
-            progressBarRegister.setVisibility(View.INVISIBLE);
+           progressDialog.hide();
             btnRegister.setVisibility(View.VISIBLE);
             etRegisterPass.setError("password is required");
             etRegisterPass.requestFocus();
 
         }
-        if (!PASSWORD_PATTERN.matcher(pass).matches()) {
-            progressBarRegister.setVisibility(View.INVISIBLE);
+        if (pass.length() < 8) {
+           progressDialog.hide();
             btnRegister.setVisibility(View.VISIBLE);
             etRegisterPass.setError("Password too weak, please enter atleast 8 characters, Upper and lowe cases, 1 special character with no spaces");
             etRegisterPass.requestFocus();
@@ -149,15 +161,13 @@ public class Register extends AppCompatActivity {
 
 
                                 } else {
-                                    progressBarRegister.setVisibility(View.INVISIBLE);
-                                    btnRegister.setVisibility(View.VISIBLE);
+                                   progressDialog.hide();
                                     Toast.makeText(Register.this,"Failed to register try again", Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
                     }else {
-                        progressBarRegister.setVisibility(View.INVISIBLE);
-                        btnRegister.setVisibility(View.VISIBLE);
+                       progressDialog.hide();
                         Toast.makeText(Register.this,"Failed to register try again", Toast.LENGTH_LONG).show();
                     }
                 }
@@ -170,8 +180,7 @@ public class Register extends AppCompatActivity {
 
                 @Override
                 public void onVerificationFailed(@NonNull FirebaseException e) {
-                    progressBarRegister.setVisibility(View.INVISIBLE);
-                    btnRegister.setVisibility(View.VISIBLE);
+                   progressDialog.hide();
                     Toast.makeText(Register.this,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
                 }
 
@@ -190,14 +199,13 @@ public class Register extends AppCompatActivity {
             PhoneAuthOptions options =
                     PhoneAuthOptions.newBuilder(mAuth)
                             .setPhoneNumber("+63" + phone)
-                            .setTimeout(60l, TimeUnit.SECONDS)
+                            .setTimeout(0l, TimeUnit.SECONDS)
                             .setActivity(this)
                             .setCallbacks(mCallbacks)
                             .build();
             PhoneAuthProvider.verifyPhoneNumber(options);
         } else {
-            progressBarRegister.setVisibility(View.INVISIBLE);
-            btnRegister.setVisibility(View.VISIBLE);
+          progressDialog.hide();
             Toast.makeText(Register.this,"Password Unmatched", Toast.LENGTH_LONG).show();
         }
     }
