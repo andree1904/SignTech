@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -21,6 +23,7 @@ public class ForgotPassword extends AppCompatActivity {
     private EditText etEmailAddress;
     private Button btnResetPass;
     private ProgressDialog progressDialog;
+    NetworkChangeListener networkChangeListener = new NetworkChangeListener();
 
 
     FirebaseAuth mAuth;
@@ -80,5 +83,17 @@ public class ForgotPassword extends AppCompatActivity {
                 }
             }
         });
+    }
+    @Override
+    protected void onStart() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeListener,filter);
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkChangeListener);
+        super.onStop();
     }
 }

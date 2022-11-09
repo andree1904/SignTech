@@ -9,7 +9,9 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -53,7 +55,7 @@ public class Profile extends AppCompatActivity {
 
     AlertDialog.Builder builder;
 
-
+    NetworkChangeListener networkChangeListener = new NetworkChangeListener();
     private FirebaseUser user;
     private DatabaseReference reference;
     private String userID;
@@ -300,5 +302,16 @@ public class Profile extends AppCompatActivity {
                 .show();
 
     }
+    @Override
+    protected void onStart() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeListener,filter);
+        super.onStart();
+    }
 
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkChangeListener);
+        super.onStop();
+    }
 }

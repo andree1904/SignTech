@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -30,6 +32,7 @@ public class Login extends AppCompatActivity {
     TextView tvForgotPassword;
     ImageView imgBackLogin;
 
+    NetworkChangeListener networkChangeListener = new NetworkChangeListener();
     private ProgressDialog progressDialog;
     private FirebaseAuth mAuth;
     private static final Pattern PASSWORD_PATTERN =
@@ -127,5 +130,18 @@ public class Login extends AppCompatActivity {
             etLoginPass.requestFocus();
         }
 
+    }
+
+    @Override
+    protected void onStart() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeListener,filter);
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkChangeListener);
+        super.onStop();
     }
 }

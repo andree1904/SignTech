@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
@@ -43,6 +45,7 @@ public class OTP_Verification extends AppCompatActivity {
     private String userID;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     private ProgressDialog progressDialog;
+    NetworkChangeListener networkChangeListener = new NetworkChangeListener();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +143,7 @@ public class OTP_Verification extends AppCompatActivity {
                         }
                         else {
                             progressDialog.hide();
-                            Toast.makeText(OTP_Verification.this,"Invalid OTP", Toast.LENGTH_LONG).show();
+                            Toast.makeText(OTP_Verification.this,"Invalid OTP or the phone number is already been used", Toast.LENGTH_LONG).show();
                         }
 
                     }
@@ -190,4 +193,17 @@ public class OTP_Verification extends AppCompatActivity {
                 }
             }.start();
         }
+
+    @Override
+    protected void onStart() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeListener,filter);
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReceiver(networkChangeListener);
+        super.onStop();
+    }
 }
