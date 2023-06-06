@@ -56,6 +56,7 @@
         android:hint="Enter full name"
         android:inputType="textPersonName"
         android:paddingStart="20dp"
+        android:enabled="false"
         android:paddingEnd="20dp"/>
 
     <EditText
@@ -73,7 +74,9 @@
         android:inputType="textEmailAddress"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        android:fontFamily="@font/helvetica_regular" />
+        android:fontFamily="@font/helvetica_regular"
+        android:enabled="false"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -91,6 +94,7 @@
         android:textStyle="bold"
         android:drawableStart="@drawable/ic_phone"
         android:drawablePadding="12dp"
+
         />
 
     <EditText
@@ -107,7 +111,9 @@
         android:inputType="phone"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        android:fontFamily="@font/helvetica_regular" />
+        android:fontFamily="@font/helvetica_regular"
+        android:enabled="false"
+        />
 
     <EditText
         android:id="@+id/etRegisterPass"
@@ -123,7 +129,9 @@
         android:hint="Create Password"
         android:inputType="textPassword"
         android:paddingStart="20dp"
-        android:paddingEnd="20dp"/>
+        android:paddingEnd="20dp"
+        android:enabled="false"
+        />
 
     <EditText
         android:id="@+id/etRegisterConfirmPass"
@@ -139,22 +147,32 @@
         android:hint="Confirm Password"
         android:inputType="textPassword"
         android:paddingStart="20dp"
-        android:paddingEnd="20dp" />
+        android:paddingEnd="20dp"
+        android:enabled="false"
+        />
 
-    <Button
-        android:id="@+id/btnRegister"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/custom_button"
-        android:fontFamily="@font/helvetica"
-        android:text="Register"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="18dp" />
+        <CheckBox
+            android:id="@+id/chkPrivacy"
+            android:layout_width="284dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="32dp"
+            android:fontFamily="@font/helvetica"
+            android:text=" I have read Data Privacy policy" />
+
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/custom_button"
+            android:fontFamily="@font/helvetica"
+            android:text="Register"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="18dp" />
 
         <TextView
             android:id="@+id/tvLoginHere"
@@ -167,6 +185,8 @@
             android:textColor="@color/green"
             android:textSize="14dp"
             android:textStyle="bold"/>
+
+
 
     </LinearLayout>
 

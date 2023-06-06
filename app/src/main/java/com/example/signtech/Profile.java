@@ -1,10 +1,5 @@
 package com.example.signtech;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -21,6 +16,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -170,7 +170,7 @@ public class Profile extends AppCompatActivity {
 
             if (user.isEmailVerified()) {
                 tvVerified.setText("Email Verified");
-                tvVerified.setBackground(ContextCompat.getDrawable(this, custom_button10));
+                tvVerified.setBackground(ContextCompat.getDrawable(this,custom_button10));
                 tvVerified.setTextColor(Color.BLACK);
             } else {
                 tvVerified.setText("Email not Verified (Click to verify)");

@@ -40,7 +40,6 @@ public class Change_Password extends AppCompatActivity {
             Pattern.compile("^" +
                     "(?=.*[0-9])" +         //at least 1 digit
                     "(?=.*[a-z])" +         //at least 1 lower case letter
-                    "(?=.*[A-Z])" +         //at least 1 upper case letter
                     "(?=.*[a-zA-Z])" +      //any letter
                     "(?=.*[!@#$%^&+=])" +    //at least 1 special character
                     "(?=\\S+$)" +           //no white spaces
@@ -138,7 +137,7 @@ public class Change_Password extends AppCompatActivity {
             else {
                     progressDialog.hide();
                     builder.setTitle("Error")
-                            .setMessage("Password too weak, please enter atleast 8 characters, Upper and lowe cases, 1 special character with no spaces")
+                            .setMessage("Password too weak, please enter atleast 8 characters, 1 special character with no spaces")
                             .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {

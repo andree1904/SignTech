@@ -92,6 +92,7 @@
             android:background="@drawable/custom_button8"
             android:fontFamily="@font/helvetica"
             android:text="Delete"
+            android:enabled="false"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="25dp" />

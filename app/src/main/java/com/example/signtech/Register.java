@@ -4,16 +4,27 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.media.Image;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Patterns;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -48,25 +59,29 @@ public class Register extends AppCompatActivity {
     Button btnRegister;
     TextView tvLoginHere;
     ImageView imgBackRegister;
+    CheckBox chkPrivacy;
 
     NetworkChangeListener networkChangeListener = new NetworkChangeListener();
     private ProgressDialog progressDialog;
     AlertDialog.Builder builder;
+
+    private FirebaseUser user;
+    private DatabaseReference reference;
+    private String userID;
+
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^" +
                     "(?=.*[0-9])" +         //at least 1 digit
                     "(?=.*[a-z])" +         //at least 1 lower case letter
-                    "(?=.*[A-Z])" +         //at least 1 upper case letter
                     "(?=.*[a-zA-Z])" +      //any letter
                     "(?=.*[!@#$%^&+=])" +    //at least 1 special character
                     "(?=\\S+$)" +           //no white spaces
                     ".{8,}" +               //at least 8 characters
                     "$");
-    private FirebaseUser user;
-    private DatabaseReference reference;
-    private String userID;
+
     private FirebaseAuth mAuth;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
+    String text ="I have read Data Privacy policy";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,17 +95,21 @@ public class Register extends AppCompatActivity {
         btnRegister = (Button) findViewById(R.id.btnRegister);
         tvLoginHere = (TextView) findViewById(R.id.tvLoginHere);
         imgBackRegister = (ImageView) findViewById(R.id.imgBackRegister);
+        chkPrivacy = (CheckBox) findViewById(R.id.chkPrivacy);
         progressDialog = new ProgressDialog(Register.this);
-        builder = new AlertDialog.Builder(this);
 
+
+        builder = new AlertDialog.Builder(this);
         mAuth = FirebaseAuth.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
+        user = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Users");
-        userID = user.getUid();
+
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                
                 registerUser();
             }
         });
@@ -98,7 +117,7 @@ public class Register extends AppCompatActivity {
         tvLoginHere.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Register.this,Login.class);
+                Intent intent = new Intent(Register.this, Login.class);
                 startActivity(intent);
                 finish();
             }
@@ -110,6 +129,71 @@ public class Register extends AppCompatActivity {
                 Register.super.onBackPressed();
             }
         });
+
+        SpannableString ss = new SpannableString(text);
+
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View view) {
+
+                final Dialog dialog = new Dialog(Register.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.terms_and_conditions);
+
+                Button btnAccept = dialog.findViewById(R.id.btnAccept);
+                Button btnDecline = dialog.findViewById(R.id.btnDecline);
+
+                btnAccept.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        chkPrivacy.setChecked(true);
+                        dialog.dismiss();
+                    }
+                });
+
+                btnDecline.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        chkPrivacy.setChecked(false);
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+                dialog.setCancelable(true);
+            }
+        };
+    ss.setSpan(clickableSpan,12,31, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    chkPrivacy.setText(ss);
+    chkPrivacy.setMovementMethod(LinkMovementMethod.getInstance());
+
+
+    chkPrivacy.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+            if (b) {
+                etRegisterName.setEnabled(true);
+                etRegisterEmail.setEnabled(true);
+                etRegisterPhone.setEnabled(true);
+                etRegisterPass.setEnabled(true);
+                etRegisterConfirmPass.setEnabled(true);
+                btnRegister.setEnabled(true);
+                }
+            else {
+
+                etRegisterName.setEnabled(false);
+                etRegisterEmail.setEnabled(false);
+                etRegisterPhone.setEnabled(false);
+                etRegisterPass.setEnabled(false);
+                etRegisterConfirmPass.setEnabled(false);
+                btnRegister.setEnabled(false);
+
+
+            }
+            }
+
+
+    });
     }
 
     private void registerUser() {
@@ -120,6 +204,21 @@ public class Register extends AppCompatActivity {
         String phone = etRegisterPhone.getText().toString().trim();
         String pass = etRegisterPass.getText().toString().trim();
         String confirmpass = etRegisterConfirmPass.getText().toString().trim();
+
+        DatabaseReference ref = reference.child(userID).child("User Information");
+
+        ref.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull  DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Toast.makeText(Register.this,"Email Address is already taken", Toast.LENGTH_LONG).show();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull  DatabaseError error) {
+                Toast.makeText(Register.this,"There is something wrong", Toast.LENGTH_LONG).show();
+            }
+        });
 
         if(name.isEmpty()) {
            progressDialog.hide();
@@ -135,6 +234,7 @@ public class Register extends AppCompatActivity {
             etRegisterEmail.requestFocus();
             return;
         }
+
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
           progressDialog.hide();
@@ -225,7 +325,7 @@ public class Register extends AppCompatActivity {
             else {
                 progressDialog.hide();
                 builder.setTitle("Error")
-                        .setMessage("Password too weak, please enter atleast 8 characters, Upper and lowe cases, 1 special character with no spaces")
+                        .setMessage("Password too weak, please enter atleast 8 characters, 1 special character with no spaces")
                         .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -254,4 +354,6 @@ public class Register extends AppCompatActivity {
         unregisterReceiver(networkChangeListener);
         super.onStop();
     }
+
+
 }

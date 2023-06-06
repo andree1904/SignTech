@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -37,9 +38,13 @@ public class Login extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^" +
-                    "(?=.*[0-9])" + "(?=.*[a-z])" + "(?=.*[A-Z])" + "(?=.*[@#$%^&+=])"
-                    + "(?=\\S+$)" + ".{8,}" + "$"
-            );
+                    "(?=.*[0-9])" +         //at least 1 digit
+                    "(?=.*[a-z])" +         //at least 1 lower case letter
+                    "(?=.*[a-zA-Z])" +      //any letter
+                    "(?=.*[!@#$%^&+=])" +    //at least 1 special character
+                    "(?=\\S+$)" +           //no white spaces
+                    ".{8,}" +               //at least 8 characters
+                    "$");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +58,7 @@ public class Login extends AppCompatActivity {
         progressDialog = new ProgressDialog(Login.this);
 
         mAuth = FirebaseAuth.getInstance();
-
+        onStart();
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -91,7 +96,7 @@ public class Login extends AppCompatActivity {
         String pass = etLoginPass.getText().toString().trim();
 
         if (email.isEmpty()) {
-          progressDialog.hide();
+            progressDialog.hide();
             etLoginEmail.setError("Email is required");
             etLoginEmail.requestFocus();
         }
@@ -126,7 +131,7 @@ public class Login extends AppCompatActivity {
 
         if (pass.length() < 8 ) {
             progressDialog.hide();
-            etLoginPass.setError("Password too weak, please enter atleast 8 characters, Upper and lowe cases, 1 special character with no spaces");
+            etLoginPass.setError("Password too weak, please enter atleast 8 characters, 1 special character with no spaces");
             etLoginPass.requestFocus();
         }
 
@@ -134,14 +139,29 @@ public class Login extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkChangeListener,filter);
-        super.onStart();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+            registerReceiver(networkChangeListener, filter);
+            super.onStart();
+        }
     }
 
     @Override
     protected void onStop() {
-        unregisterReceiver(networkChangeListener);
-        super.onStop();
+        try {
+            unregisterReceiver(networkChangeListener);
+            super.onStop();
+
+        }catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+
     }
+
+    protected void onDestroy() {
+        super.onDestroy();
+        onStop();
+
+    }
+
 }
